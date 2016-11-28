@@ -7,7 +7,7 @@
 		"cwd": "${workspaceRoot}",
 		"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
 		"program": "${workspaceRoot}/main.js",
-    "preLaunchTask": "webpack",
+    "preLaunchTask": "dev",
 		"internalConsoleOptions": "openOnSessionStart"
 	}]
 }
