@@ -2,13 +2,16 @@
 	"compilerOptions": {
 		"outDir": "./dist/",
 		"sourceMap": true,
-		"noImplicitAny": true,
+		"noImplicitAny": false,
 		"module": "commonjs",
-		"target": "es5",
+		"target": "es6",
 		"jsx": "react",
     "experimentalDecorators": true
 	},
 	"files": [
-		"./app/index.tsx"
+		"./typings/index.d.ts",
+		"./app/index.tsx",
+		"./app/electron.ts",
+		"./app/xmplay-server.ts"
 	]
 }
