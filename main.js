@@ -1,3 +1,5 @@
+require('./app/error-handling');
+
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
