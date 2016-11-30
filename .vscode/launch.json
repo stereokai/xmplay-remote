@@ -1,13 +1,34 @@
 {
 	"version": "0.2.0",
 	"configurations": [{
-		"name": "Debug Main Process",
+		"name": "Launch",
 		"type": "node",
 		"request": "launch",
-		"cwd": "${workspaceRoot}",
-		"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
 		"program": "${workspaceRoot}/main.js",
-    "preLaunchTask": "dev",
-		"internalConsoleOptions": "openOnSessionStart"
+		"stopOnEntry": false,
+		"args": [],
+		"internalConsoleOptions": "openOnSessionStart",
+		"cwd": "${workspaceRoot}",
+		"preLaunchTask": "build",
+		"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+		"runtimeArgs": [
+			".",
+			"--enable-logging"
+		],
+		"env": {},
+		"console": "internalConsole",
+		"sourceMaps": true,
+		"outDir": "${workspaceRoot}/dist"
+	}, {
+		"name": "Attach",
+		"type": "node",
+		"request": "attach",
+		"port": 5858,
+		"address": "localhost",
+		"restart": false,
+		"sourceMaps": true,
+		"outDir": "${workspaceRoot}/dist",
+		"localRoot": "${workspaceRoot}",
+		"remoteRoot": null
 	}]
 }

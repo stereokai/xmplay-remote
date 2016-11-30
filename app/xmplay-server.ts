@@ -1,7 +1,11 @@
 const bodyParser = require('body-parser');
 import * as express from 'express';
 
-export class XMPLayServer {
+interface XMPlayExecutionStatusResponse extends express.Response {
+  xmplayActionExecuted: boolean;
+}
+
+export default class XMPlayServer {
   constructor(middleware) {
     const app = express();
 
@@ -15,14 +19,17 @@ export class XMPLayServer {
 
     if (middleware) app.use(middleware);
 
-    app.get('/', function(req, res){
-      res.send('hello world');
+    app.post('/execute', (req, res: XMPlayExecutionStatusResponse) => {
+      if (res.xmplayActionExecuted)
+        res.sendStatus(200);
+      else
+        res.sendStatus(500);
     });
 
     return app.listen(
       864,
       '0.0.0.0',
-      function () {
+      () => {
         console.log('Application worker ' + process.pid + ' started...');
       }
     );

@@ -3,42 +3,48 @@ import * as ReactDOM from 'react-dom';
 import {observable} from 'mobx';
 import {observer} from 'mobx-react';
 import DevTools from 'mobx-react-devtools';
-
-class AppState {
-  @observable timer = 0;
-
-  constructor() {
-      setInterval(() => {
-          this.timer += 1;
-      }, 1000);
-  }
-
-  resetTimer() {
-      this.timer = 0;
-  }
-}
+import XMPlayClient from './xmplay-client';
+import XMPlayActions from './xmplay-actions';
 
 @observer
-class TimerView extends React.Component<{appState: AppState}, {}> {
+class XMPlayRemote extends React.Component<{client: XMPlayClient}, {}> {
+  client: XMPlayClient;
+  @observable status = '';
+
+  get actions(): string[] {
+    return Object.keys(XMPlayActions);
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.client = props.client;
+  }
+
   render() {
     return (
       <div>
-        <button onClick={this.onReset}>
-          Seconds passed: {this.props.appState.timer}
-        </button>
-        <DevTools />
+        <div>{this.status}</div>
+        {this.actions.map((action) => {
+          return <button key={action} onClick={() => this.onExecute(action)}>{action}</button>
+        })}
+        {/* <DevTools /> */}
       </div>
     );
   }
 
-  onReset = () => {
-      this.props.appState.resetTimer();
+  onExecute(action: string) {
+    this.props.client.execute(action)
+      .then(() => {
+        this.status = 'cool';
+      })
+      .catch(() => {
+        this.status = 'not cool'
+      });
   }
 };
 
-const appState =  new AppState();
-
 ReactDOM.render(
-  <TimerView appState={appState} />,
+  <XMPlayRemote client={ new XMPlayClient() } />,
   document.getElementById('root')
 );
