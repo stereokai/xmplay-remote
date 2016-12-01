@@ -28,6 +28,8 @@
     "@types/node": "^6.0.51",
     "@types/react": "^0.14.50",
     "@types/react-dom": "^0.14.19",
+    "@types/socket.io": "^1.4.27",
+    "@types/socket.io-client": "^1.4.29",
     "@types/whatwg-fetch": "0.0.32",
     "body-parser": "^1.15.2",
     "electron-edge": "^6.5.1",
@@ -38,6 +40,8 @@
     "node-dde": "^0.1.0",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
+    "socket.io": "^1.7.1",
+    "socket.io-client": "^1.7.1",
     "trycatch": "^1.5.21"
   }
 }

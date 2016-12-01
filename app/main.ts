@@ -1,27 +1,53 @@
 
 import { app } from './electron';
-import XMPlayServer from './xmplay-server';
+const trycatch = require('trycatch');
 import { xmplay } from './xmplay';
-import { autorun, when } from 'mobx';
+import { autorun, when, reaction } from 'mobx';
+
+
 
 class Main {
   constructor() {
-    let server, dispose;
+    let io:SocketIO.Server;
+    const main = this;
 
-    dispose = when(
-      () => xmplay.isConnected,
-      () => {
-        dispose();
-        server = new XMPlayServer(xmplay.middleware.bind(xmplay));
-      }
-    );
+    xmplay.onDisconnect(() => {
+      main.notifyXMPlayStatus(io);
+    });
+
+    xmplay.onConnect(() => {
+      main.notifyXMPlayStatus(io);
+    });
 
     app.on('ready', () => {
+      io = require('socket.io')('864');
+      io.on('connection', this.server.bind(this));
       xmplay.connect();
     });
 
     app.on('window-all-closed', () => {
-      server.close();
+      xmplay.disconnect();
+      io.close();
+    });
+  }
+
+  notifyXMPlayStatus(io: SocketIO.Server | SocketIO.Socket) {
+    io.emit('status', {
+      isXMPlayConnected: xmplay.isConnected
+    });
+  }
+
+  server(socket: SocketIO.Socket) {
+    this.notifyXMPlayStatus(socket);
+
+    socket.on('action', (action) => {
+      trycatch(() => {
+        xmplay.execute(action);
+      }, () => {
+        socket.emit('status', {
+          error: 'Unrecognized command'
+        });
+      })
     });
   }
 }
