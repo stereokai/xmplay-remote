@@ -1,4 +1,3 @@
-// const poll = require('./poll');
 require('electron-edge');
 const trycatch = require('trycatch');
 const dde = require('node-dde');

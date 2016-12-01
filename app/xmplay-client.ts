@@ -1,13 +1,14 @@
 import XMPlayActions from './xmplay-actions';
 
 export default class XMPlayClient {
+  static SERVER_URL = 'http://localhost:864/execute';
   isAction(action) {
     return !!XMPlayActions[action];
   }
 
   execute(action): Promise<any> {
     if (this.isAction(action)) {
-      return fetch("http://localhost:864/execute", {
+      return fetch(XMPlayClient.SERVER_URL, {
         method: 'POST',
         mode: 'cors',
         body: JSON.stringify({

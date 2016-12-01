@@ -6,12 +6,12 @@ import { autorun, when } from 'mobx';
 
 class Main {
   constructor() {
-    let server, disposer;
+    let server, dispose;
 
-    disposer = when(
+    dispose = when(
       () => xmplay.isConnected,
       () => {
-        disposer();
+        dispose();
         server = new XMPlayServer(xmplay.middleware.bind(xmplay));
       }
     );
