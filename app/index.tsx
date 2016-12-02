@@ -9,10 +9,12 @@ import XMPlayActions from './xmplay-actions';
 @observer
 class XMPlayRemote extends React.Component<{client: XMPlayClient}, {}> {
   client: XMPlayClient;
-  @observable status = '';
 
   get actions(): string[] {
-    return Object.keys(XMPlayActions);
+    return Object.keys(XMPlayActions)
+      .filter((property) => {
+        return typeof XMPlayActions[property] === 'string';
+      });
   }
 
   constructor(props) {
@@ -24,7 +26,7 @@ class XMPlayRemote extends React.Component<{client: XMPlayClient}, {}> {
   render() {
     return (
       <div>
-        <div>{this.status}</div>
+        <div>{this.client.isConnected.toString()}</div>
         {this.actions.map((action) => {
           return <button key={action} onClick={() => this.onExecute(action)}>{action}</button>
         })}
@@ -34,13 +36,7 @@ class XMPlayRemote extends React.Component<{client: XMPlayClient}, {}> {
   }
 
   onExecute(action: string) {
-    this.props.client.execute(action)
-      .then(() => {
-        this.status = 'cool';
-      })
-      .catch(() => {
-        this.status = 'not cool'
-      });
+    this.client.execute(action);
   }
 };
 

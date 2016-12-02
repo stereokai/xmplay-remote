@@ -81,13 +81,9 @@ export class XMPlay {
     this.isConnected = false;
   }
 
-  isAction(action) {
-    return !!XMPlayActions[action];
-  }
-
   @action execute(action) {
     trycatch(() => {
-      if (this.isAction(action))
+      if (XMPlayActions.isAction(action))
         this.command.execute(XMPlayActions[action])
       else
         throw new Error(`Can't execute an invalid action`);

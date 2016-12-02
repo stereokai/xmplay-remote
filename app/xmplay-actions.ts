@@ -23,4 +23,8 @@ export default class XMPlayActions {
   static LIST_REMOVE = 'key370';
   static LIST_PLAY = 'key372';
   static LIST_CLEAR_QUEUE = 'key375';
+
+  static isAction(action) {
+    return !!XMPlayActions[action];
+  }
 }
