@@ -1,17 +1,26 @@
 import XMPlayActions from './xmplay-actions';
 import * as io from 'socket.io-client';
-import { action, observable } from 'mobx';
+import { action, observable, transaction } from 'mobx';
+import { TrackInfo } from './xmplay';
 
 export default class XMPlayClient {
   static SERVER_URL = 'http://localhost:864/execute';
 
   private socket: SocketIOClient.Socket;
-  @observable isConnected = false;
+
+  @observable public isConnected = false;
+  @observable public trackInfo: TrackInfo = {
+    title: '',
+    artist: '',
+    album: '',
+    length: ''
+  };
 
   constructor() {
     this.socket = io('http://localhost:864');
 
     this.socket.on('status', this.onStatus.bind(this));
+    this.socket.on('track-info', this.onTrackChange.bind(this));
   }
 
   execute(action) {
@@ -26,5 +35,14 @@ export default class XMPlayClient {
     if (typeof newState.isXMPlayConnected === 'boolean') {
       this.isConnected = newState.isXMPlayConnected;
     }
+  }
+
+  @action private onTrackChange(trackInfo: TrackInfo) {
+    transaction(() => {
+      this.trackInfo.title = trackInfo.title;
+      this.trackInfo.artist = trackInfo.artist;
+      this.trackInfo.album = trackInfo.album;
+      this.trackInfo.length = trackInfo.length;
+    });
   }
 }

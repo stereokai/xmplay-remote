@@ -4,8 +4,6 @@ const trycatch = require('trycatch');
 import { xmplay } from './xmplay';
 import { autorun, when, reaction } from 'mobx';
 
-
-
 class Main {
   constructor() {
     let io:SocketIO.Server;
@@ -48,6 +46,15 @@ class Main {
           error: 'Unrecognized command'
         });
       })
+    });
+
+    autorun(() => {
+      socket.emit('track-info', {
+        title: xmplay.trackInfo.title,
+        artist: xmplay.trackInfo.artist,
+        album: xmplay.trackInfo.album,
+        length: xmplay.trackInfo.length
+      });
     });
   }
 }

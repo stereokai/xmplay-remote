@@ -1,31 +1,54 @@
 require('electron-edge');
 const trycatch = require('trycatch');
 const dde = require('node-dde');
-import { when, reaction, observable, action } from 'mobx';
+import { when, reaction, transaction, extendObservable, observable, action } from 'mobx';
 import XMPlayActions from './xmplay-actions';
 
-export interface TrackInfo {
+interface AvailableTrackInfo {
   title: string;
+  file: string;
+  path: string;
+  size: string;
+  subsong: string;
+  format: string;
+  'sample rate': string;
+  'bit rate': string;
+  channels: string;
+  length: string;
+  output: string;
   artist: string;
-  album: string;
+  '0:00': string;
+}
+
+export interface TrackInfo {
+  title?: string;
+  artist?: string;
+  album?: string;
+  length?: string;
 }
 
 export class XMPlay {
   static POLLING_INTERVAL = 5000;
 
   command;
-  information;
+  info;
   isEnabled = false;
   @observable isConnected = false;
-  @observable lastTrackInfo: TrackInfo = {
+  @observable trackInfo: TrackInfo = {
     title: '',
     artist: '',
-    album: ''
+    album: '',
+    length: ''
   };
 
   constructor() {
     this.command = dde.createClient('XMPlay', 'system');
-    this.information = dde.createClient('XMPlay', 'info1');
+    this.info = dde.createClients({
+      XMPlay: {
+        info0: ['info'],
+        info1: ['info']
+      }
+    });
 
     // We don't want to have partial operation.
     // If any of the DDE clients fail, restart.
@@ -33,7 +56,7 @@ export class XMPlay {
       this._disconnect();
     });
 
-    this.information.on('disconnected', () => {
+    this.info.on('disconnected', () => {
       this._disconnect();
     });
 
@@ -41,6 +64,10 @@ export class XMPlay {
     this.onDisconnect(() => {
       !!this.isEnabled && this.connect();
     });
+
+    this.onConnect(() => {
+      this.trackInfoLoop();
+    })
   }
 
   @action connect() {
@@ -52,7 +79,7 @@ export class XMPlay {
 
     trycatch(() => {
       this.command.connect();
-      this.information.connect();
+      this.info.connect();
 
       this.isConnected = true;
     }, (err) => {
@@ -75,8 +102,8 @@ export class XMPlay {
     if (this.command.isConnected())
       this.command.disconnect();
 
-    if (this.information.isConnected())
-      this.information.disconnect();
+    if (this.info.isConnected())
+      this.info.disconnect();
 
     this.isConnected = false;
   }
@@ -92,29 +119,42 @@ export class XMPlay {
     });
   }
 
-  queryTrackInfo() {
-    return this.formatTrackInfo(this.information.request('info1'));
+  trackInfoLoop() {
+    if (this.isConnected) {
+      this.queryTrackInfo();
+      setTimeout(this.trackInfoLoop.bind(this), XMPlay.POLLING_INTERVAL);
+    }
   }
 
-//   pollTrackInfo()
-// // Greet the World every second
-// poll(() => new Promise(() => console.log('Hello World!')), 1000)
+  @action queryTrackInfo() {
+    let phase1, phase2;
 
-  formatTrackInfo(unformattedTrackInfo) {
-    return unformattedTrackInfo.split('\n');
+    trycatch(
+      () => {
+        let allInfo = this.info.request();
+
+        phase1 = this.formatTrackInfo(allInfo[0].result);
+        phase2 = this.formatTrackInfo(allInfo[1].result);
+
+        transaction(() => {
+          this.trackInfo.title = phase1.title;
+          this.trackInfo.artist = phase2.artist;
+          this.trackInfo.album = phase2.title;
+          this.trackInfo.length = phase1.length;
+        });
+      },
+      err => err // We ignore this error, but must pass a fn to node-dde
+    );
   }
 
-  middleware(req, res, next) {
-    trycatch(() => {
-      if (req && req.body && req.body.action)
-        this.execute(req.body.action);
-
-      res.xmplayActionExecuted = true;
-    }, () => {
-      res.xmplayActionExecuted = false;
-    });
-
-    return next();
+  formatTrackInfo(unformattedTrackInfo: string): AvailableTrackInfo {
+    return unformattedTrackInfo
+      .split('\n')
+      .reduce((info, infoPart: string) => {
+        const infoTuple = infoPart.split('\t');
+        info[infoTuple[0].toLowerCase()] = infoTuple[1];
+        return info;
+      }, <AvailableTrackInfo>{});
   }
 
   onConnect(callback) {
