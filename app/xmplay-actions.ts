@@ -24,7 +24,9 @@ export default class XMPlayActions {
   static LIST_PLAY = 'key372';
   static LIST_CLEAR_QUEUE = 'key375';
 
+  static FILE_ACTION_REGEX = /^\[(open|list)\(.+\)]$/;
+
   static isAction(action) {
-    return !!XMPlayActions[action];
+    return !!XMPlayActions[action] || XMPlayActions.FILE_ACTION_REGEX.test(action);
   }
 }

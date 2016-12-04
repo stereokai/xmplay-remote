@@ -119,6 +119,14 @@ export class XMPlay {
     });
   }
 
+  playFile(file) {
+    this.execute(`[open(${file})]`);
+  }
+
+  queueFile(file) {
+    this.execute(`[list(${file})]`);
+  }
+
   trackInfoLoop() {
     if (this.isConnected) {
       this.queryTrackInfo();
