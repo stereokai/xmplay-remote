@@ -23,12 +23,20 @@ export default class XMPlayClient {
     this.socket.on('track-info', this.onTrackChange.bind(this));
   }
 
-  execute(action) {
+  execute(action: string) {
     if (XMPlayActions.isAction(action)) {
       this.socket.emit('action', action);
     } else {
       throw new Error(`Can't execute an invalid action`);
     }
+  }
+
+  playFile(file: string) {
+    this.execute(`[open(${file})]`);
+  }
+
+  queueFile(file: string) {
+    this.execute(`[list(${file})]`);
   }
 
   @action private onStatus(newState) {

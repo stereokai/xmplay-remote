@@ -109,12 +109,15 @@ export class XMPlay {
     this.isConnected = false;
   }
 
-  @action execute(action) {
+  @action execute(action: string) {
     trycatch(() => {
-      if (XMPlayActions.isAction(action))
-        this.command.execute(XMPlayActions[action])
-      else
-        throw new Error(`Can't execute an invalid action`);
+      if (XMPlayActions.isAction(action)) {
+        if (XMPlayActions.FILE_ACTION_REGEX.test(action)) {
+          this.command.execute(action);
+        } else {
+          this.command.execute(XMPlayActions[action]);
+        }
+      } else throw new Error(`Can't execute an invalid action`);
     }, () => {
       this.isConnected = false;
     });
