@@ -2,6 +2,7 @@
 import { app } from './electron';
 const trycatch = require('trycatch');
 import { xmplay } from './xmplay';
+import { filebrowser } from './filebrowser';
 import { autorun, when, reaction } from 'mobx';
 
 class Main {
@@ -27,6 +28,8 @@ class Main {
       xmplay.disconnect();
       io.close();
     });
+
+
   }
 
   notifyXMPlayStatus(io: SocketIO.Server | SocketIO.Socket) {
@@ -57,6 +60,9 @@ class Main {
       });
     });
   }
-}
 
+  async getFiles() {
+    console.log(await filebrowser.getItemsInFolder('C:/Users/Tom/Downloads/The Book Of Souls'))
+  }
+}
 new Main();

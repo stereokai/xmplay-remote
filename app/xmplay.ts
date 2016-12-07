@@ -29,6 +29,7 @@ export interface TrackInfo {
 
 export class XMPlay {
   static POLLING_INTERVAL = 5000;
+  static SUPPORTED_EXTENSIONS = /(^aac$|^ac3$|^aif$|^aiff$|^alac$|^ape$|^cda$|^cue$|^dff$|^dsf$|^flac$|^it$|^kar$|^m3u$|^m4a$|^m4b$|^mid$|^midi$|^mod$|^mpc$|^mpp$|^mtm$|^mus$|^ofr$|^ofs$|^oga$|^ogg$|^pls$|^psid$|^ra$|^ram$|^rm$|^rmi$|^rmm$|^rsid$|^s3m$|^sid$|^umx$|^wav$|^wax$|^wma$|^wv$|^xm$|^xmi$)/;
 
   command;
   info;
@@ -185,5 +186,3 @@ export class XMPlay {
 }
 
 export const xmplay = new XMPlay();
-
-
