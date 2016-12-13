@@ -13,7 +13,8 @@ namespace XMPlayInterface {
     IPC_SETPLAYLISTPOS = 121,
     IPC_GETLISTPOS = 125,
     IPC_GETPLAYLISTFILE = 211,
-    IPC_GETPLAYLISTTITLE = 212
+    IPC_GETPLAYLISTTITLE = 212,
+    IPC_GETPLAYLISTTITLEW = 213
   }
 
   public enum IPC_PLAYINGSTATUS {
@@ -52,7 +53,7 @@ namespace XMPlayInterface {
       IntPtr pos = winampMemoryAddress;
 
       if (ReadProcessMemory(handle, pos, buff, 88, ref ret)) {
-        System.Text.Encoding encoding = System.Text.Encoding.Default;
+        System.Text.Encoding encoding = System.Text.Encoding.UTF8;
         str = encoding.GetString(buff);
       }
       return str;

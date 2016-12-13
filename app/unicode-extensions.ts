@@ -5,7 +5,7 @@ interface String {
 
 const UNICODE_IDENTIFIER = /\\u([a-fA-F0-9]{4})/g;
 
-String.prototype.toUnicode = () => {
+String.prototype.toUnicode = function () {
   let result = '';
 
   for (let i = 0; i < this.length; i++) {
@@ -15,7 +15,7 @@ String.prototype.toUnicode = () => {
   return result;
 };
 
-String.prototype.fromUnicode = () => {
+String.prototype.fromUnicode = function () {
   return this.replace(UNICODE_IDENTIFIER, function(g, m1) {
     return String.fromCharCode(parseInt(m1, 16));
   });

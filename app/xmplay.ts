@@ -1,6 +1,6 @@
 const edge = require('electron-edge');
+const dde = require('electron-node-dde');
 const trycatch = require('trycatch');
-const dde = require('node-dde');
 import './unicode-extensions';
 import { when, reaction, transaction, extendObservable, observable, action } from 'mobx';
 import XMPlayActions from './xmplay-actions';
@@ -227,6 +227,7 @@ export class XMPlay {
     getPlaylist({ x: 10 }, (error, result) => {
       console.log((<string[]>result).map((name) => {
         const uni = name.toUnicode();
+
         return uni.substring(0, uni.indexOf('\\u0000')).fromUnicode();
       }));
 
