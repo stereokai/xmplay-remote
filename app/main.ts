@@ -27,9 +27,8 @@ class Main {
     app.on('window-all-closed', () => {
       xmplay.disconnect();
       io.close();
+      app.exit();
     });
-
-
   }
 
   notifyXMPlayStatus(io: SocketIO.Server | SocketIO.Socket) {

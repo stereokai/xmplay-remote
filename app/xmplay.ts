@@ -1,6 +1,7 @@
-require('electron-edge');
+const edge = require('electron-edge');
 const trycatch = require('trycatch');
 const dde = require('node-dde');
+import './unicode-extensions';
 import { when, reaction, transaction, extendObservable, observable, action } from 'mobx';
 import XMPlayActions from './xmplay-actions';
 
@@ -31,8 +32,6 @@ export class XMPlay {
   static POLLING_INTERVAL = 5000;
   static SUPPORTED_EXTENSIONS = /(^aac$|^ac3$|^aif$|^aiff$|^alac$|^ape$|^cda$|^cue$|^dff$|^dsf$|^flac$|^it$|^kar$|^m3u$|^m4a$|^m4b$|^mid$|^midi$|^mod$|^mpc$|^mpp$|^mtm$|^mus$|^ofr$|^ofs$|^oga$|^ogg$|^pls$|^psid$|^ra$|^ram$|^rm$|^rmi$|^rmm$|^rsid$|^s3m$|^sid$|^umx$|^wav$|^wax$|^wma$|^wv$|^xm$|^xmi$)/;
 
-  command;
-  info;
   isEnabled = false;
   @observable isConnected = false;
   @observable trackInfo: TrackInfo = {
@@ -42,7 +41,20 @@ export class XMPlay {
     length: ''
   };
 
+  private command;
+  private info;
+  private _getPlaylist: Function;
+
   constructor() {
+    this.setupWin32Interface();
+    this.setupDDEInterface();
+  }
+
+  //----------------------------------*\
+  // DDE Interface
+  //----------------------------------*/
+
+  private setupDDEInterface() {
     this.command = dde.createClient('XMPlay', 'system');
     this.info = dde.createClients({
       XMPlay: {
@@ -68,7 +80,7 @@ export class XMPlay {
 
     this.onConnect(() => {
       this.trackInfoLoop();
-    })
+    });
   }
 
   @action connect() {
@@ -93,11 +105,12 @@ export class XMPlay {
   disconnect() {
     if (this.isConnected === false) return;
 
-    this._disconnect();
     this.isEnabled = false;
+    this._disconnect();
   }
 
   @action private _disconnect() {
+    console.log('disco')
     if (this.isConnected === false) return;
 
     if (this.command.isConnected())
@@ -148,12 +161,10 @@ export class XMPlay {
         phase1 = this.formatTrackInfo(allInfo[0].result);
         phase2 = this.formatTrackInfo(allInfo[1].result);
 
-        transaction(() => {
-          this.trackInfo.title = phase1.title;
-          this.trackInfo.artist = phase2.artist;
-          this.trackInfo.album = phase2.title;
-          this.trackInfo.length = phase1.length;
-        });
+        this.trackInfo.title = phase1.title;
+        this.trackInfo.artist = phase2.artist;
+        this.trackInfo.album = phase2.title;
+        this.trackInfo.length = phase1.length;
       },
       err => err // We ignore this error, but must pass a fn to node-dde
     );
@@ -173,7 +184,7 @@ export class XMPlay {
     reaction(
       () => this.isConnected,
       (isConnected) => {
-        isConnected && callback();
+        !!isConnected && callback();
       }
     );
   }
@@ -185,6 +196,52 @@ export class XMPlay {
         !isConnected && callback();
       }
     );
+  }
+
+
+  //----------------------------------*\
+  // Win32 Interface
+  //----------------------------------*/
+
+  private setupWin32Interface() {
+    const settings = {
+      source: require('path').join(__dirname, '../app/xmplay-win32.cs'),
+      typeName: 'XMPlayInterface.XMPlayController',
+    }
+
+    const getPlaylist = edge.func({
+      ...settings,
+      methodName: 'getPlaylist'
+    });
+
+    const getPlayingStatus = edge.func({
+      ...settings,
+      methodName: 'getPlayingStatus'
+    });
+
+    const getElapsedTime = edge.func({
+      ...settings,
+      methodName: 'getElapsedTime'
+    });
+
+    getPlaylist({ x: 10 }, (error, result) => {
+      console.log((<string[]>result).map((name) => {
+        const uni = name.toUnicode();
+        return uni.substring(0, uni.indexOf('\\u0000')).fromUnicode();
+      }));
+
+      if (error) throw error;
+    });
+
+    getElapsedTime({ x: 10 }, (error, result) => {
+      console.log('elapsed time:', result);
+      if (error) throw error;
+    });
+
+    getPlayingStatus({ x: 10 }, (error, result) => {
+      console.log('status:', result);
+      if (error) throw error;
+    });
   }
 }
 

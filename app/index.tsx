@@ -46,6 +46,7 @@ class XMPlayRemote extends React.Component<{client: XMPlayClient}, {shouldQueue:
         <div>artist: {this.client.trackInfo.artist} </div>
         <div>album: {this.client.trackInfo.album} </div>
         <div>length: {this.client.trackInfo.length} </div>
+
         {this.actions.map((action) => {
           return <button key={action} onClick={() => this.onExecute(action)}>{action}</button>
         })}
