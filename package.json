@@ -3,18 +3,21 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "start": "npm run dev",
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder",
-    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+    "dist": "npm compile && electron-builder",
+    "dist:dir": "npm dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
-    "source-map-support": "^0.5.10"
+    "electron-webpack-ts": "^3.1.1",
+    "source-map-support": "^0.5.10",
+    "typescript": "^3.3.3333"
   },
   "devDependencies": {
-    "electron": "4.0.1",
-    "electron-builder": "20.38.4",
-    "electron-webpack": "^2.6.2",
-    "webpack": "4.28.4"
+    "electron": "4.0.5",
+    "electron-builder": "20.38.5",
+    "electron-webpack": "2.6.2",
+    "webpack": "4.29.5"
   }
 }
