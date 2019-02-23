@@ -1,8 +1,8 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
-import * as path from 'path'
-import { format as formatUrl } from 'url'
+import { app, BrowserWindow } from 'electron';
+import * as path from 'path';
+import { format as formatUrl } from 'url';
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -60,3 +60,23 @@ app.on('activate', () => {
 app.on('ready', () => {
   mainWindow = createMainWindow()
 })
+
+const edge = require('electron-edge-js');
+const dde = require('electron-node-dde');
+const command = dde.createClient('XMPlay', 'system');
+const info = dde.createClients({
+  XMPlay: {
+    info0: ['info'],
+    info1: ['info']
+  }
+});
+// var helloWorld = edge.func(function () {/*
+//     async (input) => {
+//         return ".NET Welcomes " + input.ToString();
+//     }
+// */});
+
+// helloWorld('JavaScript', function (error, result) {
+//   if (error) throw error;
+//   console.log(result);
+// });

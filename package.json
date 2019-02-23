@@ -10,12 +10,14 @@
     "dist:dir": "npm dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "electron-edge-js": "git://github.com/trodi/electron-edge-js.git#bb83c09ea7b01426055878fa651cdd57b9388479",
+    "electron-node-dde": "git://github.com/stereokai/electron-node-dde.git",
     "electron-webpack-ts": "^3.1.1",
     "source-map-support": "^0.5.10",
     "typescript": "^3.3.3333"
   },
   "devDependencies": {
-    "electron": "4.0.5",
+    "electron": "4.0.3",
     "electron-builder": "20.38.5",
     "electron-webpack": "2.6.2",
     "webpack": "4.29.5"
