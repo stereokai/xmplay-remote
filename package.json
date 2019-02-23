@@ -14,12 +14,18 @@
     "electron-node-dde": "git://github.com/stereokai/electron-node-dde.git",
     "electron-webpack-ts": "^3.1.1",
     "source-map-support": "^0.5.10",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "mobx": "^5.9.0",
+    "mobx-react": "^5.4.3",
+    "mobx-react-devtools": "^6.0.3",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
   },
   "devDependencies": {
     "electron": "4.0.3",
     "electron-builder": "20.38.5",
     "electron-webpack": "2.6.2",
-    "webpack": "4.29.5"
+    "webpack": "4.29.5",
+    "@types/react-dom": "^16.8.2"
   }
 }
